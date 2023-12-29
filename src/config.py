@@ -20,7 +20,8 @@ config = {
         'latest_checkpoint_step': 50,
         'summary_step': 50, #also summary step
         'max_checkpoints_to_keep': 5,
-        'learning_rate': 0.001
+        'learning_rate': 0.001,
+        'input_shape': (198, 13)
     },
     'model_params': {
         # here can go any params you need for your model
