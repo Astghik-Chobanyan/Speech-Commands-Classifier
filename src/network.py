@@ -22,23 +22,31 @@ class Network(tf.keras.Model):
     def __init__(self, input_shape=config_model['input_shape']):
         super().__init__()
         # self.normalization = DataNormalization()
-        self.dense1 = Dense(100, input_shape=input_shape, activation='relu')
-        self.dropout1 = Dropout(0.5)
-        self.dense2 = Dense(80, activation='relu')
-        self.dropout2 = Dropout(0.5)
-        self.dense3 = Dense(35, activation='softmax')
+        self.model = Sequential([
+            layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape),
+            layers.BatchNormalization(),
+            layers.MaxPooling2D((2, 2)),
 
-        self.inputs = Input(shape=input_shape)
-        self.outputs = self.call(self.inputs)
-        self.model = Model(inputs=self.inputs, outputs=self.outputs)
+            layers.Conv2D(64, (3, 3), activation='relu'),
+            layers.BatchNormalization(),
+            layers.MaxPooling2D((2, 2)),
 
+            layers.Flatten(),
+
+            layers.Reshape((-1, 64)),  
+            layers.LSTM(128, return_sequences=True),
+            layers.Dropout(0.5),
+
+            layers.Dense(128, activation='relu'),
+            layers.Dropout(0.5),
+
+            layers.Dense(35, activation='softmax')
+        ])
+        
     def call(self, inputs):
         # x = self.normalization(inputs)
-        x = self.dense1(inputs)
-        x = self.dropout1(x)
-        x = self.dense2(x)
-        x = self.dropout2(x)
-        return self.dense3(x)
+        return self.model(inputs)
+           
 
 
 if __name__ == '__main__':
@@ -47,5 +55,4 @@ if __name__ == '__main__':
     prep.create_iterators()
     train_dataset, val_dataset, test_dataset = FeatureMappings().create_features(prep)
 
-    print('')
 
